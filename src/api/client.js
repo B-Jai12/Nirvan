@@ -34,7 +34,7 @@ export async function analyzeVideo(imageData) {
     const res = await fetch(`${API_BASE}/api/v1/vision/analyse`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image_data: imageData }),
+      body: JSON.stringify({ image_b64: imageData }),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
