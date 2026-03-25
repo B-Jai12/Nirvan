@@ -1,0 +1,220 @@
+/* ── Permissions Page ──────────────────────────────── */
+.perm-page {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Left dark decorative panel ── */
+.perm-left {
+  flex: 0 0 38%;
+  background: linear-gradient(160deg, #150C11 0%, #0E0809 50%, #130A0E 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+/* Animated concentric rings */
+.perm-rings { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+
+.perm-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 0.5px solid rgba(212,160,188,0.18);
+  animation: permRingPulse 6s ease-in-out infinite;
+}
+.perm-ring-1 { width: 280px; height: 280px; animation-delay: 0s; }
+.perm-ring-2 { width: 380px; height: 380px; border-color: rgba(245,195,110,0.1); animation-delay: 1.5s; }
+.perm-ring-3 { width: 480px; height: 480px; border-color: rgba(212,160,188,0.07); animation-delay: 3s; }
+
+@keyframes permRingPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.7; }
+  50%       { transform: scale(1.04); opacity: 1;   }
+}
+
+/* Shield */
+.perm-shield-wrap {
+  position: relative;
+  z-index: 2;
+  animation: permShieldFloat 4s ease-in-out infinite;
+}
+@keyframes permShieldFloat {
+  0%, 100% { transform: translateY(0px);  }
+  50%       { transform: translateY(-8px); }
+}
+.perm-shield-glow {
+  position: absolute; inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,160,188,0.2) 0%, transparent 70%);
+  animation: permGlowPulse 3s ease-in-out infinite;
+}
+@keyframes permGlowPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1);   }
+  50%       { opacity: 1;   transform: scale(1.1); }
+}
+.perm-shield-svg { width: 80px; height: 90px; }
+
+/* Logo */
+.perm-left-logo {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.82rem; font-weight: 600; letter-spacing: 0.22em;
+  color: rgba(245,220,190,0.8); text-transform: uppercase;
+  position: absolute; top: 2rem; left: 2rem;
+}
+
+/* Copy */
+.perm-left-copy {
+  position: relative; z-index: 2;
+  text-align: center;
+  position: absolute; bottom: 3rem;
+  left: 0; right: 0;
+}
+.perm-quote {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem; font-weight: 400; font-style: italic;
+  color: rgba(245,220,190,0.85);
+  line-height: 1.4; margin-bottom: 0.75rem;
+}
+.perm-left-sub {
+  font-size: 0.82rem; font-weight: 300;
+  color: rgba(245,220,190,0.4);
+  line-height: 1.6;
+}
+
+/* Sparkles */
+.perm-sparkle {
+  position: absolute; border-radius: 50%;
+  animation: permSparkle 2s ease-in-out infinite;
+}
+.perm-sparkle-1 { width: 6px; height: 6px; background: rgba(212,160,188,0.6); top: 18%; left: 15%; animation-delay: 0s; }
+.perm-sparkle-2 { width: 4px; height: 4px; background: rgba(245,195,110,0.7); top: 25%; right: 18%; animation-delay: 0.8s; }
+.perm-sparkle-3 { width: 5px; height: 5px; background: rgba(212,160,188,0.5); bottom: 30%; left: 20%; animation-delay: 1.6s; }
+.perm-sparkle-4 { width: 3px; height: 3px; background: rgba(245,195,110,0.6); bottom: 22%; right: 22%; animation-delay: 2.4s; }
+
+@keyframes permSparkle {
+  0%, 100% { opacity: 0.2; transform: scale(1)   translateY(0); }
+  50%       { opacity: 0.9; transform: scale(1.4) translateY(-5px); }
+}
+
+/* ── Right content panel ── */
+.perm-right {
+  flex: 1;
+  background: #FDFAF7;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2.5rem;
+}
+
+.perm-content { width: 100%; max-width: 460px; }
+
+/* Header */
+.perm-label {
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #D4A0BC; margin-bottom: 0.6rem;
+}
+.perm-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.2rem; font-weight: 400; color: #1C1410;
+  line-height: 1.2; margin-bottom: 0.6rem;
+}
+.perm-sub {
+  font-size: 0.88rem; color: #7A6E65; line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Permission items */
+.perm-list {
+  display: flex; flex-direction: column; gap: 0.9rem;
+  margin-bottom: 2rem;
+}
+.perm-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem 1.1rem;
+  background: #FDFAF7;
+  border: 0.5px solid rgba(60,40,20,0.08);
+  border-radius: 14px;
+  transition: all 0.3s;
+  animation: permCardIn 0.5s ease both;
+}
+@keyframes permCardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.perm-item.granted {
+  background: #FDF0F6;
+  border-color: rgba(212,160,188,0.3);
+}
+
+/* Icon */
+.perm-icon-wrap {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: #F0EAE4;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s;
+  color: #7A6E65;
+}
+.perm-icon-wrap svg { width: 18px; height: 18px; }
+.perm-icon-wrap.granted { background: rgba(212,160,188,0.2); color: #D4A0BC; }
+
+/* Info */
+.perm-item-info { flex: 1; min-width: 0; }
+.perm-item-title-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem; }
+.perm-item-title { font-size: 0.9rem; font-weight: 500; color: #1C1410; }
+.perm-required {
+  font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #D4A0BC;
+  background: rgba(212,160,188,0.12); border-radius: 30px;
+  padding: 1px 7px;
+}
+.perm-item-desc { font-size: 0.8rem; color: #7A6E65; line-height: 1.5; }
+
+/* Toggle */
+.perm-toggle {
+  width: 44px; height: 24px; border-radius: 12px;
+  border: none; cursor: pointer;
+  background: #E0D8D0;
+  position: relative; flex-shrink: 0;
+  transition: background 0.3s;
+}
+.perm-toggle.on { background: #D4A0BC; }
+.perm-toggle-knob {
+  position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  transition: transform 0.3s;
+}
+.perm-toggle.on .perm-toggle-knob { transform: translateX(20px); }
+
+/* Begin button */
+.btn-begin {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.6rem;
+  width: 100%; padding: 0.9rem;
+  border-radius: 100px;
+  background: linear-gradient(135deg, #C4998A, #D4A0BC);
+  color: white; font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem; font-weight: 500; letter-spacing: 0.04em;
+  border: none; cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 20px rgba(212,160,188,0.35);
+}
+.btn-begin:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212,160,188,0.5); }
+.btn-begin.animating { opacity: 0; transform: translateY(-10px); }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .perm-page { flex-direction: column; }
+  .perm-left { flex: 0 0 220px; }
+  .perm-right { padding: 2rem 1.5rem; }
+}

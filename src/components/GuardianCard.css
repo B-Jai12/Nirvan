@@ -1,0 +1,386 @@
+/* ── GuardianCard — Live Audio Threat Analyzer ── */
+
+.gc-root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.5s ease;
+}
+
+/* State: threat — card flashes blush */
+.gc-root--threat {
+  animation: gcFlash 0.8s ease 3;
+}
+
+@keyframes gcFlash {
+  0%, 100% { background: transparent; }
+  50% { background: rgba(196,153,138,0.18); }
+}
+
+/* ── Permission modal overlay ── */
+.gc-perm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15,10,26,0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: gcFadeIn 0.25s ease;
+}
+
+@keyframes gcFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.gc-perm-modal {
+  background: #FDFAF7;
+  border-radius: 20px;
+  padding: 1.75rem 1.5rem 1.5rem;
+  width: min(360px, 90vw);
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(28,20,16,0.2);
+  animation: gcSlideUp 0.3s ease;
+}
+
+@keyframes gcSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.gc-perm-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.gc-perm-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: #1C1410;
+  margin-bottom: 0.5rem;
+}
+
+.gc-perm-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #7A6E65;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.gc-perm-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gc-perm-list li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: #4A3728;
+  background: #EDE8E1;
+  border-radius: 9px;
+  padding: 0.55rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gc-perm-btn {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 100px;
+  border: none;
+  background: #4A3728;
+  color: #FDFAF7;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gc-perm-btn:hover {
+  background: #1C1410;
+  transform: translateY(-1px);
+}
+
+.gc-perm-cancel {
+  background: none;
+  color: #B0A89E;
+  font-size: 0.78rem;
+  margin-top: 0.65rem;
+  cursor: pointer;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: color 0.2s;
+}
+.gc-perm-cancel:hover { color: #7A6E65; }
+
+/* ── CENTER AREA ── */
+.gc-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.25rem 0;
+}
+
+/* ── IDLE state ── */
+.gc-idle-btn-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gc-pulse-ring {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(107,140,114,0.4);
+  animation: gcPulseRing 2s ease-out infinite;
+}
+
+.gc-pulse-ring-2 {
+  animation-delay: 0.7s;
+  width: 76px;
+  height: 76px;
+  border-color: rgba(107,140,114,0.2);
+}
+
+@keyframes gcPulseRing {
+  0%   { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.gc-start-btn {
+  position: relative;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #4A3728;
+  color: #FDFAF7;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(74,55,40,0.22);
+}
+
+.gc-start-btn:hover {
+  background: #1C1410;
+  transform: scale(1.06);
+}
+
+.gc-idle-hint {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7em;
+  color: #B0A89E;
+  font-weight: 300;
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
+/* ── RECORDING state ── */
+.gc-waveform {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 36px;
+}
+
+.gc-wave-bar {
+  width: 3.5px;
+  border-radius: 3px;
+  background: #6B8C72;
+  animation: gcWave 1s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.gc-wave-bar:nth-child(1) { height: 12px; animation-delay: 0.0s; }
+.gc-wave-bar:nth-child(2) { height: 24px; animation-delay: 0.1s; }
+.gc-wave-bar:nth-child(3) { height: 36px; animation-delay: 0.2s; }
+.gc-wave-bar:nth-child(4) { height: 28px; animation-delay: 0.15s; }
+.gc-wave-bar:nth-child(5) { height: 16px; animation-delay: 0.05s; }
+
+@keyframes gcWave {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.6; }
+  50%       { transform: scaleY(1);   opacity: 1;   }
+}
+
+/* Frozen waveform (analyzing) */
+.gc-waveform--frozen .gc-wave-bar {
+  animation: none;
+  transform: scaleY(0.6);
+  opacity: 0.35;
+}
+
+.gc-rec-status {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78em;
+  color: #1C1410;
+  font-weight: 400;
+}
+
+.gc-rec-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e05252;
+  animation: gcRecPulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes gcRecPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* Spinner (analyzing) */
+.gc-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(74,55,40,0.12);
+  border-top-color: #4A3728;
+  border-radius: 50%;
+  animation: gcSpin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes gcSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Stop button */
+.gc-stop-btn {
+  padding: 0.35rem 0.9rem;
+  border-radius: 100px;
+  border: 0.5px solid rgba(74,55,40,0.2);
+  background: #EDE8E1;
+  color: #7A6E65;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.gc-stop-btn:hover { background: #D5CFC8; }
+
+/* ── RESULT states ── */
+.gc-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  animation: gcFadeIn 0.35s ease;
+}
+
+.gc-result-icon {
+  font-size: 1.5em;
+}
+
+.gc-result-label {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1em;
+  font-weight: 400;
+  color: #1C1410;
+}
+
+.gc-result-label--threat {
+  color: #C4998A;
+  font-weight: 600;
+}
+
+.gc-result-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.68em;
+  color: #7A6E65;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.gc-confidence {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.65em;
+  color: #B0A89E;
+  font-weight: 300;
+}
+
+/* Location chip */
+.gc-location {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.65em;
+  color: #6B8C72;
+  background: rgba(107,140,114,0.1);
+  border: 0.5px solid rgba(107,140,114,0.25);
+  border-radius: 100px;
+  padding: 0.2em 0.6em;
+  margin-top: 0.15rem;
+}
+
+/* ── Camera pip ── */
+.gc-camera-pip {
+  position: absolute;
+  bottom: 0.6rem;
+  right: 0.6rem;
+  width: 72px;
+  height: 54px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid rgba(196,153,138,0.5);
+  box-shadow: 0 4px 12px rgba(28,20,16,0.15);
+  background: #1C1410;
+  animation: gcFadeIn 0.4s ease;
+}
+
+.gc-camera-pip video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* mirror */
+}
+
+.gc-camera-label {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 7px;
+  color: rgba(255,255,255,0.8);
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+/* ── Transcript preview ── */
+.gc-transcript {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.62em;
+  color: #B0A89E;
+  font-style: italic;
+  text-align: center;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 1em;
+}

@@ -1,0 +1,583 @@
+/* ── MagicBento CSS — NIRVANA Warm Palette ──────────────────────────── */
+
+/* Color tokens */
+:root {
+  --mb-page:   #F7F3EE;
+  --mb-card:   #FDFAF7;
+  --mb-surf:   #EDE8E1;
+  --mb-border: rgba(60,40,20,0.10);
+  --mb-text:   #1C1410;
+  --mb-muted:  #7A6E65;
+  --mb-hint:   #B0A89E;
+  --mb-sage:   #D4A0BC;
+  --mb-sage-l: #FDF0F6;
+  --mb-blush:  #C4998A;
+  --mb-blush-l:#F5EBE7;
+  --mb-deep:   #4A3728;
+}
+
+.card-grid {
+  display: grid;
+  gap: 0.45em;
+  padding: 0.5em;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  font-size: clamp(0.78rem, 0.7rem + 0.35vw, 1rem);
+}
+
+/* ── Base card ────────────────────────────────────── */
+.magic-bento-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  padding: 1em 1.1em;
+  border-radius: 14px;
+  border: 0.5px solid var(--mb-border);
+  background: var(--mb-card);
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  cursor: default;
+  color: var(--mb-text);
+  box-shadow: 0 2px 12px rgba(60,40,20,0.04);
+
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-intensity: 0;
+  --glow-radius: 260px;
+}
+
+.magic-bento-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(60,40,20,0.07);
+}
+
+/* Map card — fills edge to edge */
+.bento-card--map {
+  padding: 0;
+  background: var(--mb-surf);
+  overflow: hidden;
+}
+
+.bento-card--map .magic-bento-card__header {
+  position: absolute;
+  top: 0.7em;
+  left: 0.85em;
+  right: 0.85em;
+  z-index: 10;
+}
+
+.bento-card--map .magic-bento-card__content {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Camera card — fills edge to edge, dark bg */
+.bento-card--camera {
+  padding: 0;
+  background: #0A0A0E;
+  overflow: hidden;
+}
+
+
+/* ── Header / Content layout ─────────────────────── */
+.magic-bento-card__header,
+.magic-bento-card__content {
+  display: flex;
+  position: relative;
+}
+
+.magic-bento-card__header {
+  gap: 0.5em;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.magic-bento-card__content {
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Tag pills ───────────────────────────────────── */
+.bento-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  padding: 0.22em 0.6em;
+  border-radius: 100px;
+  border: 0.5px solid transparent;
+  flex-shrink: 0;
+}
+
+.bento-tag--sage {
+  background: #FDF0F6;
+  color: #D4A0BC;
+  border-color: rgba(212,160,188,0.25);
+}
+
+.bento-tag--blush {
+  background: var(--mb-blush-l);
+  color: var(--mb-blush);
+  border-color: rgba(196,153,138,0.2);
+}
+
+.bento-tag--hint {
+  background: var(--mb-surf);
+  color: var(--mb-hint);
+  border-color: var(--mb-border);
+}
+
+/* ── Typography ──────────────────────────────────── */
+.bento-card-title {
+  font-family: 'DM Serif Display', 'DM Sans', serif;
+  font-weight: 400;
+  font-size: 1em;
+  margin: 0.45em 0 0.18em;
+  color: var(--mb-text);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.bento-card-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.74em;
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--mb-muted);
+}
+
+/* ── Audio waveform ──────────────────────────────── */
+.bento-audio-waves {
+  display: flex;
+  align-items: center;
+  gap: 2.5px;
+  height: 22px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.bento-audio-waves span {
+  display: block;
+  width: 2.5px;
+  border-radius: 2px;
+  background: var(--mb-sage);
+  animation: bentoWave 1.2s ease-in-out var(--d, 0s) infinite;
+}
+.bento-audio-waves span:nth-child(1) { height: 8px; }
+.bento-audio-waves span:nth-child(2) { height: 14px; }
+.bento-audio-waves span:nth-child(3) { height: 22px; }
+.bento-audio-waves span:nth-child(4) { height: 18px; }
+.bento-audio-waves span:nth-child(5) { height: 24px; }
+.bento-audio-waves span:nth-child(6) { height: 16px; }
+.bento-audio-waves span:nth-child(7) { height: 10px; }
+
+@keyframes bentoWave {
+  0%, 100% { transform: scaleY(1); opacity: 0.7; }
+  50% { transform: scaleY(1.6); opacity: 1; }
+}
+
+/* ── Live badge (map card) ───────────────────────── */
+.bento-live-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #D4A0BC;
+  background: var(--mb-card);
+  padding: 0.3em 0.65em;
+  border-radius: 100px;
+  border: 0.5px solid rgba(212,160,188,0.3);
+  margin-left: auto;
+  box-shadow: 0 1px 6px rgba(60,40,20,0.06);
+}
+
+.bento-live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #D4A0BC;
+  flex-shrink: 0;
+  animation: mbPulse 2s ease-in-out infinite;
+}
+
+@keyframes mbPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+/* ── Safe checkmark & active dot ────────────────── */
+.bento-safe-check {
+  font-size: 1.1em;
+  color: var(--mb-sage);
+  font-weight: 400;
+  margin-left: auto;
+}
+
+.bento-active-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #D4A0BC;
+  margin-left: auto;
+  animation: mbPulse 2s ease-in-out infinite;
+}
+
+/* ── SOS badge ───────────────────────────────────── */
+.bento-sos-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--mb-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5em;
+  margin-bottom: 0.4em;
+  flex-shrink: 0;
+}
+
+.bento-sos-circle span {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #FDFAF7;
+  text-transform: uppercase;
+}
+
+/* ── Map card ────────────────────────────────────── */
+.bento-map-wrap {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Leaflet map inside bento card */
+.bento-leaflet-wrap {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.bento-leaflet-map {
+  width: 100%;
+  height: 100%;
+}
+
+/* Warm filter on OSM tiles */
+.bento-leaflet-map .leaflet-tile {
+  filter: sepia(18%) saturate(85%) brightness(103%);
+}
+
+/* Leaflet attribution (hide for cleanliness) */
+.bento-leaflet-map .leaflet-control-attribution {
+  display: none;
+}
+
+/* Custom user pulsing marker */
+.bm-user-pin { background: transparent; border: none; }
+.bm-pulse-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid rgba(196,153,138,0.6);
+  animation: bmPulse 1.8s ease-out infinite;
+}
+.bm-pulse-dot {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #C4998A; border: 2.5px solid white;
+  box-shadow: 0 2px 8px rgba(196,153,138,0.5);
+}
+@keyframes bmPulse { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
+
+/* Destination marker */
+.bm-dest-pin { background: transparent; border: none; }
+
+
+
+.bento-map-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--mb-card);
+  border-top: 0.5px solid var(--mb-border);
+  padding: 0.55em 0.9em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bento-map-bottom-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+}
+
+.bento-map-road {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78em;
+  font-weight: 500;
+  color: var(--mb-text);
+}
+
+.bento-map-km {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.68em;
+  color: var(--mb-muted);
+}
+
+.bento-map-route-pill {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #D4A0BC;
+  background: #FDF0F6;
+  padding: 0.25em 0.7em;
+  border-radius: 100px;
+  border: 0.5px solid rgba(212,160,188,0.25);
+}
+
+/* ── AI Guardian card ────────────────────────────── */
+.bento-guardian-layout {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin: 0.5em 0 0.75em;
+  flex-shrink: 0;
+}
+
+/* Orbit animation */
+.bento-orbit-wrap {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+}
+
+.bento-orbit-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+}
+
+.bento-orbit-outer {
+  inset: 0;
+  border-color: #D4A0BC;
+  border-top-color: transparent;
+  animation: orbitSpin 4s linear infinite;
+}
+
+.bento-orbit-inner {
+  inset: 8px;
+  border-color: var(--mb-blush);
+  border-bottom-color: transparent;
+  animation: orbitSpinR 6s linear infinite;
+}
+
+.bento-orbit-core {
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  background: var(--mb-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orbitSpinR {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+.bento-guardian-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.bento-status-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em;
+  margin-top: 0.5em;
+}
+
+.bento-status-pill {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.65em;
+  font-weight: 400;
+  color: var(--mb-muted);
+  background: var(--mb-surf);
+  padding: 0.2em 0.55em;
+  border-radius: 100px;
+  border: 0.5px solid var(--mb-border);
+}
+
+/* Stats grid */
+.bento-guardian-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45em;
+  margin-top: auto;
+  padding-top: 0.5em;
+  flex-shrink: 0;
+}
+
+.gs-item {
+  background: var(--mb-surf);
+  border: 0.5px solid var(--mb-border);
+  border-radius: 10px;
+  padding: 0.55em 0.7em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+}
+
+.gs-val {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3em;
+  font-weight: 400;
+  color: var(--mb-text);
+  line-height: 1;
+}
+
+.gs-lbl {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--mb-hint);
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+/* ── Border Glow (sage/blush on light bg) ────────── */
+.magic-bento-card--border-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 4px;
+  background: radial-gradient(
+    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+    rgba(212,160,188,calc(var(--glow-intensity) * 0.5)) 0%,
+    rgba(196,153,138,calc(var(--glow-intensity) * 0.3)) 35%,
+    transparent 65%
+  );
+  border-radius: inherit;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.3s;
+}
+
+.magic-bento-card--border-glow:hover {
+  box-shadow: 0 6px 24px rgba(212,160,188,0.12), 0 2px 8px rgba(60,40,20,0.06);
+}
+
+/* ── Particles ───────────────────────────────────── */
+.particle-container { position: relative; overflow: hidden; }
+
+/* ── Spotlight ───────────────────────────────────── */
+.global-spotlight { mix-blend-mode: multiply; will-change: transform, opacity; z-index: 200 !important; pointer-events: none; }
+
+.bento-section { position: relative; user-select: none; }
+
+/* ── Grid layout (3 cards) ─────────────────────── */
+@media (max-width: 599px) {
+  .card-grid { grid-template-columns: 1fr; padding: 0.4em; }
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  .card-grid { grid-template-columns: repeat(2, 1fr); }
+  .magic-bento-card:nth-child(3) { grid-column: 1 / span 2; }
+}
+
+@media (min-width: 1024px) {
+  .card-grid {
+    grid-template-columns: 1fr 1.5fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  /* Card 1 — Audio (top-left) */
+  .magic-bento-card:nth-child(1) { grid-column: 1; grid-row: 1; min-height: 280px; }
+
+  /* Card 2 — Camera (bottom-left) */
+  .magic-bento-card:nth-child(2) { grid-column: 1; grid-row: 2; min-height: 280px; }
+
+  /* Card 3 — Map (right side, spans full height) */
+  .magic-bento-card:nth-child(3) { grid-column: 2; grid-row: 1 / span 2; }
+}
+
+/* ── Toggles ─────────────────────────────────────── */
+.mb-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.mb-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 100px;
+  background: rgba(60,40,20,0.15);
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s;
+  flex-shrink: 0;
+}
+
+.mb-toggle--on {
+  background: #C4998A;
+}
+
+.mb-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.mb-toggle--on .mb-toggle-thumb {
+  transform: translateX(20px);
+}
+
+.mb-off-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--mb-hint);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  gap: 0.5rem;
+  opacity: 0.6;
+}

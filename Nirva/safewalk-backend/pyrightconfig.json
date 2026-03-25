@@ -1,0 +1,20 @@
+{
+    "venvPath": ".",
+    "venv": "venv",
+    "pythonVersion": "3.11",
+    "typeCheckingMode": "basic",
+    "reportMissingImports": false,
+    "reportMissingModuleSource": false,
+    "reportGeneralTypeIssues": false,
+    "reportArgumentType": false,
+    "reportReturnType": false,
+    "reportOperatorIssue": false,
+    "reportIndexIssue": false,
+    "reportCallIssue": false,
+    "reportAttributeAccessIssue": false,
+    "reportFunctionMemberAccess": false,
+    "useLibraryCodeForTypes": true,
+    "exclude": [
+        "venv/**"
+    ]
+}
