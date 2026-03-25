@@ -51,7 +51,11 @@ export default function GuardianCard() {
     setCardState(STATES.SAFE);
     setConfidence(conf);
     setResultDetail(detail);
-    autoReturnRef.current = setTimeout(() => setCardState(STATES.IDLE), 4000);
+    window.dispatchEvent(new Event('nirvan_safe'));
+    autoReturnRef.current = setTimeout(() => {
+      setCardState(STATES.IDLE);
+      window.dispatchEvent(new Event('nirvan_safe'));
+    }, 4000);
   }, []);
 
   // ── Trigger THREAT ───────────────────────────────────────
@@ -59,6 +63,7 @@ export default function GuardianCard() {
     setCardState(STATES.THREAT);
     setConfidence(conf);
     setResultDetail(detail || text);
+    window.dispatchEvent(new Event('nirvan_threat'));
 
     // 1. SMS alert
     const ts  = new Date().toLocaleTimeString('en-IN', { hour12: true });
@@ -205,6 +210,7 @@ export default function GuardianCard() {
     setCardState(STATES.IDLE);
     setTranscript('');
     setConfidence(null);
+    window.dispatchEvent(new Event('nirvan_safe'));
   }, [cameraStream]);
 
   // ── Render ───────────────────────────────────────────────

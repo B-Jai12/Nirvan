@@ -109,6 +109,21 @@ export function useGuardianSocket() {
   useEffect(() => {
     mountedRef.current = true;
     connect();
+    
+    // Listen for local system events from GuardianCard
+    const handleThreat = () => {
+      setFilterStatus("threat");
+      setSosTriggered(true);
+    };
+    
+    const handleSafe = () => {
+      setFilterStatus("safe");
+      setSosTriggered(false);
+    };
+    
+    window.addEventListener("nirvan_threat", handleThreat);
+    window.addEventListener("nirvan_safe", handleSafe);
+    
     return () => {
       mountedRef.current = false;
       clearTimeout(reconnectRef.current);
@@ -117,6 +132,8 @@ export function useGuardianSocket() {
         wsRef.current.onclose = null;
         wsRef.current.close();
       }
+      window.removeEventListener("nirvan_threat", handleThreat);
+      window.removeEventListener("nirvan_safe", handleSafe);
     };
   }, []); // eslint-disable-line
 
