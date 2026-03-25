@@ -161,14 +161,65 @@ class AudioThreatDetector:
                 self.history = []
                 return AudioThreatResult(0.01, "safe", [], "calm", False, "en", "User provided a safe greeting.", transcription)
 
-            # 2. DISTRESS is ALWAYS a threat (Overrules AI)
-            critical_keywords = ["help", "bachao", "ruko", "pakdo", "chhod do", "emergency", "danger"]
-            has_critical = any(word in low_trans for word in critical_keywords)
+            # 2. FAIL-SAFE SCORING ENGINE (Bypasses AI if criteria met)
+            # Normalization
+            norm_text = low_trans.replace("plz", "please").replace("hlp", "help").replace("bachaoo", "bachao")
+
+            HIGH_RISK = [
+                "help me", "save me", "i'm in danger", "call police", "call 100", "call 112",
+                "bachao", "saayam cheyyandi", "kaapathungal", "help karo", "mujhe bachao", "saayadha maadi"
+            ]
+            MEDIUM_RISK = [
+                "i'm scared", "i feel unsafe", "mujhe darr lag raha hai",
+                "naaku bhayam ga undi", "bayama irukku", "nanage bhaya ide", "something is wrong", "this is not right"
+            ]
+            BOUNDARY = [
+                "don't touch me", "leave me", "chhod do", "vadilandi", "stay away",
+                "door raho", "haath mat lagao", "let me go"
+            ]
+            FEAR_INDICATORS = ["scared", "afraid", "darr", "bhayam", "bayam"]
             
-            if has_critical or low_trans.count("stop") >= 2:
-                print(f"🚩 Absolute Distress Dominance Triggered: '{low_trans}'")
+            score: int = 0
+            detected_keywords: List[str] = []
+
+            for word in HIGH_RISK:
+                if word in norm_text:
+                    score += 5
+                    detected_keywords.append(word)
+
+            for word in MEDIUM_RISK:
+                if word in norm_text:
+                    score += 3
+                    detected_keywords.append(word)
+
+            for word in BOUNDARY:
+                if word in norm_text:
+                    score += 4
+                    detected_keywords.append(word)
+
+            # Repetition boosts
+            if norm_text.count("help") > 1: score += 3
+            if norm_text.count("no") > 2: score += 2
+            if norm_text.count("stop") >= 2: score += 3
+
+            # Escalation override
+            status = "SAFE"
+            if any(f_word in norm_text for f_word in FEAR_INDICATORS):
+                score += 2
+                
+            if score >= 5:
+                status = "DANGER"
+            elif score >= 3 or any(f_word in norm_text for f_word in FEAR_INDICATORS):
+                status = "SUSPICIOUS"
+
+            if status == "DANGER":
+                print(f"🚩 DANGER Score ({score}) Triggered: '{norm_text}'")
                 if tmp_path and os.path.exists(tmp_path): os.unlink(tmp_path)
-                return AudioThreatResult(0.95, "distress_keyword", ["help"], "urgent", True, "auto", "HARD RULE: Critical distress keywords detected. Absolute threat confirmation.", transcription)
+                return AudioThreatResult(0.95, "distress_keyword", detected_keywords, "urgent", True, "auto", f"HARD RULE: Critical distress score ({score}) detected. Absolute threat confirmation.", transcription)
+            elif status == "SUSPICIOUS":
+                print(f"⚠️ SUSPICIOUS Score ({score}) Triggered: '{norm_text}'")
+                if tmp_path and os.path.exists(tmp_path): os.unlink(tmp_path)
+                return AudioThreatResult(0.80, "fear_or_boundary", detected_keywords, "panicked", True, "auto", f"HARD RULE: Medium risk or explicit fear detected. Score: {score}.", transcription)
 
             # 3. Analyze (Stage 4 - Groq Llama 3.3 70B for Complex Context)
             # Maintain history (max 3 cycles)
