@@ -16,7 +16,12 @@ export async function analyzeAudio(transcript, { location, contacts } = {}) {
       body: JSON.stringify({ transcript, location, contacts }),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    const data = await res.json();
+    return {
+      threat_detected: data.result?.is_threat || data.filter?.escalate || false,
+      confidence: data.result?.confidence ? Math.round(data.result.confidence * 100) : 0,
+      detail: data.result?.raw_analysis || data.message || "",
+    };
   } catch (err) {
     console.warn("[Nirvan] analyzeAudio failed:", err.message);
     // Graceful degradation — return safe
@@ -37,7 +42,12 @@ export async function analyzeVideo(imageData) {
       body: JSON.stringify({ image_b64: imageData }),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    const data = await res.json();
+    return {
+      threat_detected: data.result?.is_threat || data.filter?.escalate || false,
+      confidence: data.result?.confidence ? Math.round(data.result.confidence * 100) : 0,
+      detail: data.result?.raw_analysis || data.message || "",
+    };
   } catch (err) {
     console.warn("[Nirvan] analyzeVideo failed:", err.message);
     return { threat_detected: false, confidence: 60, detail: "Backend unavailable." };
@@ -58,7 +68,7 @@ export async function sendSMSAlert(to, message) {
       body: JSON.stringify({ to, message }),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    return { success: res.ok };
   } catch (err) {
     console.warn("[Nirvan] sendSMSAlert failed:", err.message);
     return { success: false };
