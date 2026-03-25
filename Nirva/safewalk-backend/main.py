@@ -13,6 +13,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict # type: ignore
 import uvicorn # type: ignore
 import httpx # type: ignore
 import time
+from twilio.rest import Client # type: ignore
 
 # Global state for SMS throttling
 last_sms_time = 0.0
@@ -71,6 +72,10 @@ class AudioAnalyseRequest(BaseModel):
     audio_b64: Optional[str] = None
     mime_type: Optional[str] = "audio/webm"
     transcript: Optional[str] = None
+
+class SmsRequest(BaseModel):
+    to: str
+    message: str
 
 class VisionAnalyseRequest(BaseModel):
     image_b64: str
@@ -137,6 +142,31 @@ async def send_emergency_sms(transcription: str, confidence: float) -> bool:
 def root():
     return {"status": "online", "agent": "Audio Threat Detector", "engine": "Groq LPU"}
 
+@app.post("/api/emergency/sms")
+async def manual_emergency_sms(req: SmsRequest):
+    """Fallback endpoint for frontend to trigger SMS directly if needed."""
+    try:
+        sid = settings.twilio_account_sid
+        tok = settings.twilio_auth_token
+        frm = settings.twilio_from_number
+        if not all([sid, tok, frm]):
+            return {"success": False, "message": "Twilio not configured natively."}
+            
+        client = Client(sid, tok)
+        # We use the 'to' provided by the frontend, fallback to env variable
+        target_number = req.to or settings.emergency_contact_number
+        
+        msg = client.messages.create(
+            body=req.message,
+            from_=frm,
+            to=target_number
+        )
+        print(f"✅ Manual Emergency SMS sent! SID: {msg.sid}")
+        return {"success": True, "sid": msg.sid}
+    except Exception as e:
+        print(f"❌ Failed to send manual SMS: {e}")
+        return {"success": False, "error": str(e)}
+
 @app.post("/api/v1/audio/analyse")
 async def analyse_audio(request: AudioAnalyseRequest):
     global latest_results
@@ -144,7 +174,7 @@ async def analyse_audio(request: AudioAnalyseRequest):
     if request.transcript:
         print(f"📥 Received Text Transcript: '{request.transcript}'")
         result = await audio_agent.analyse_text(request.transcript)
-    elif request.audio_b64:
+    elif request.audio_b64 is not None:
         print(f"📥 Received Audio: {len(request.audio_b64)} chars | MIME: {request.mime_type}")
         result = await audio_agent.analyse(request.audio_b64, request.mime_type or "audio/webm")
     else:

@@ -14,12 +14,12 @@ const DEFAULT_SPOTLIGHT_RADIUS = 350;
 const DEFAULT_GLOW_COLOR = '212, 160, 188';
 const MOBILE_BREAKPOINT = 768;
 
-// ── Real Leaflet Map (Hyderabad, OSM tiles) ───────────────────
-const USER_POS  = [17.3850, 78.4867];
-const DEST_POS  = [17.4123, 78.4321];
+// ── Real Leaflet Map (Dundigal, OSM tiles) ───────────────────
+const USER_POS  = [17.6443, 78.4922];
+const DEST_POS  = [17.6520, 78.4850];
 const ROUTE_PTS = [
-  [17.3850, 78.4867], [17.3900, 78.4800], [17.3960, 78.4720],
-  [17.4020, 78.4600], [17.4060, 78.4490], [17.4100, 78.4400], [17.4123, 78.4321],
+  [17.6443, 78.4922], [17.6460, 78.4900], [17.6480, 78.4880],
+  [17.6495, 78.4865], [17.6520, 78.4850],
 ];
 
 // Fix default icon URL resolution in Vite
