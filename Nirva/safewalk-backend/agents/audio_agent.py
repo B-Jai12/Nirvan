@@ -138,6 +138,17 @@ class AudioThreatDetector:
 
             # 🛡️ HARD SAFETY BYPASS (The "Perfection" Rule)
             # 1. Greetings and known Whisper silence-hallucinations are ALWAYS safe.
+            return await self.analyse_text(transcription, tmp_path)
+        except Exception as e:
+            # Stage 8: Fail-Safe
+            return self._fail(f"Pipeline error: {str(e)}")
+
+    async def analyse_text(self, transcription: str, tmp_path: str = "") -> AudioThreatResult:
+        try:
+            if not transcription or transcription == ".":
+                if tmp_path and os.path.exists(tmp_path): os.unlink(tmp_path)
+                return self._fail("Silent or unparseable audio")
+
             low_trans = transcription.lower().strip(".,! ")
             SAFE_WORDS = [
                 "hi", "hello", "hey", "i am safe", "everything is fine", 
@@ -146,7 +157,7 @@ class AudioThreatDetector:
             ]
             if low_trans in SAFE_WORDS or len(low_trans) < 3:
                 print(f"✅ Safety Bypass Triggered for: '{low_trans}'")
-                if os.path.exists(tmp_path): os.unlink(tmp_path)
+                if tmp_path and os.path.exists(tmp_path): os.unlink(tmp_path)
                 self.history = []
                 return AudioThreatResult(0.01, "safe", [], "calm", False, "en", "User provided a safe greeting.", transcription)
 
@@ -156,7 +167,7 @@ class AudioThreatDetector:
             
             if has_critical or low_trans.count("stop") >= 2:
                 print(f"🚩 Absolute Distress Dominance Triggered: '{low_trans}'")
-                if os.path.exists(tmp_path): os.unlink(tmp_path)
+                if tmp_path and os.path.exists(tmp_path): os.unlink(tmp_path)
                 return AudioThreatResult(0.95, "distress_keyword", ["help"], "urgent", True, "auto", "HARD RULE: Critical distress keywords detected. Absolute threat confirmation.", transcription)
 
             # 3. Analyze (Stage 4 - Groq Llama 3.3 70B for Complex Context)
@@ -176,12 +187,13 @@ class AudioThreatDetector:
                 "temperature": 0.1,
                 "response_format": {"type": "json_object"}
             }
+            headers = {"Authorization": f"Bearer {self.api_key}"}
             async with httpx.AsyncClient(timeout=15.0) as client:
                 r = await client.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers)
                 r.raise_for_status()
                 analysis = json.loads(r.json()["choices"][0]["message"]["content"])
             
-            if os.path.exists(tmp_path): os.unlink(tmp_path)
+            if tmp_path and os.path.exists(tmp_path): os.unlink(tmp_path)
             
             threat_type = analysis.get("threat_type", "safe")
             conf = analysis.get("confidence", 0.0)
@@ -200,8 +212,8 @@ class AudioThreatDetector:
                 transcription=transcription
             )
         except Exception as e:
-            # Stage 8: Fail-Safe
-            return self._fail(f"Pipeline error: {str(e)}")
+            if tmp_path and os.path.exists(tmp_path): os.unlink(tmp_path)
+            return self._fail(f"Text Pipeline error: {str(e)}")
 
     def _fail(self, reason: str) -> AudioThreatResult:
         return AudioThreatResult(0.0, "safe", [], "unknown", False, "Unknown", reason, "")

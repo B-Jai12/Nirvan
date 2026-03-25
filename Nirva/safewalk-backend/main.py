@@ -68,8 +68,9 @@ filter_agent = FalseAlarmFilterAgent(settings.groq_api_key)
 # ── 3. Models ─────────────────────────────────────────────────────────────────
 
 class AudioAnalyseRequest(BaseModel):
-    audio_b64: str
+    audio_b64: Optional[str] = None
     mime_type: Optional[str] = "audio/webm"
+    transcript: Optional[str] = None
 
 class VisionAnalyseRequest(BaseModel):
     image_b64: str
@@ -139,8 +140,15 @@ def root():
 @app.post("/api/v1/audio/analyse")
 async def analyse_audio(request: AudioAnalyseRequest):
     global latest_results
-    print(f"📥 Received Audio: {len(request.audio_b64)} chars | MIME: {request.mime_type}")
-    result = await audio_agent.analyse(request.audio_b64, request.mime_type)
+    
+    if request.transcript:
+        print(f"📥 Received Text Transcript: '{request.transcript}'")
+        result = await audio_agent.analyse_text(request.transcript)
+    elif request.audio_b64:
+        print(f"📥 Received Audio: {len(request.audio_b64)} chars | MIME: {request.mime_type}")
+        result = await audio_agent.analyse(request.audio_b64, request.mime_type or "audio/webm")
+    else:
+        return {"success": False, "message": "No audio or transcript provided."}
     
     # Store in shared sensor buffer
     latest_results["audio"] = {"confidence": result.confidence, "is_threat": result.is_threat, "transcription": getattr(result, 'transcription', '')}

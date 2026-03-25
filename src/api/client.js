@@ -10,7 +10,7 @@ import { API_BASE } from "./config.js";
  */
 export async function analyzeAudio(transcript, { location, contacts } = {}) {
   try {
-    const res = await fetch(`${API_BASE}/api/analyze/audio`, {
+    const res = await fetch(`${API_BASE}/api/v1/audio/analyse`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript, location, contacts }),
@@ -31,7 +31,7 @@ export async function analyzeAudio(transcript, { location, contacts } = {}) {
  */
 export async function analyzeVideo(imageData) {
   try {
-    const res = await fetch(`${API_BASE}/api/analyze/video`, {
+    const res = await fetch(`${API_BASE}/api/v1/vision/analyse`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ image_data: imageData }),
@@ -71,7 +71,7 @@ export async function sendSMSAlert(to, message) {
  */
 export async function checkHealth() {
   try {
-    const res = await fetch(`${API_BASE}/api/health`, { method: "GET" });
+    const res = await fetch(`${API_BASE}/api/v1/audio/health`, { method: "GET" });
     return res.ok;
   } catch {
     return false;
